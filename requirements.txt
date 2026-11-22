@@ -1,0 +1,8 @@
+FROM kalilinux/kali-rolling
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git file binutils sleuthkit tshark p7zip-full unzip xxd cpio radare2 python3 python3-pip procps \
+ && for p in binwalk foremost tcpflow gdb ltrace strace zip bzip2 xz-utils qemu-utils libimage-exiftool-perl pngcheck steghide fcrackzip volatility3 sqlite3 tcpdump; do apt-get install -y --no-install-recommends $p || echo "skip $p"; done \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+RUN pip3 install --no-cache-dir --break-system-packages pycryptodome z3-solver scapy pillow numpy || true
+RUN (command -v vol >/dev/null 2>&1 || command -v volatility3 >/dev/null 2>&1 || pip3 install --no-cache-dir --break-system-packages volatility3) && (command -v vol >/dev/null 2>&1 || ln -s "$(command -v volatility3)" /usr/local/bin/vol) || true
+WORKDIR /out
